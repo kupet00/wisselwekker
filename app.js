@@ -292,14 +292,15 @@ function seededRandom(seed) {
 
 // Ontsnapt tekst voordat die als HTML in de wedstrijdweergave wordt ingevoegd.
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-// Toont een wissel als namen met een wisselpictogram; gewone meldingen blijven tekst.
+// Toont inkomende en uitgaande spelers met hun eigen richting; gewone meldingen blijven tekst.
 function formatSubstitution(action) {
   const normalized = action.replace(' komt erin voor ', ' <> ').replace(' (uitgevallen)', '');
   const separator = normalized.indexOf(' <> ');
   if (separator < 0) return esc(normalized);
   const incoming = esc(normalized.slice(0, separator));
   const outgoing = esc(normalized.slice(separator + 4));
-  return `<strong class="incoming-player">${incoming}</strong> <svg class="swap-icon" viewBox="0 0 24 24" role="img" aria-label="wissel" focusable="false"><path d="M3 7h18m0 0-4-4m4 4-4 4M21 17H3m0 0 4 4m-4-4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> ${outgoing}`;
+  const arrow = direction => `<svg class="substitution-arrow" viewBox="0 0 16 20" aria-hidden="true" focusable="false"><path d="${direction === 'up' ? 'M8 18V3m-6 7 6-7 6 7' : 'M8 2v15m-6-7 6 7 6-7'}"/></svg>`;
+  return `<span class="incoming-player"><strong>${incoming}</strong> ${arrow('up')}</span> <span class="outgoing-player">${arrow('down')} <strong>${outgoing}</strong></span>`;
 }
 let S = null; // huidige wedstrijd: { names, keeper, params, dropAt, result }
 
