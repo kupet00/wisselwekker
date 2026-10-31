@@ -1,6 +1,6 @@
-# Hockeyopstelling
+# Wisselwekker
 
-Een eenvoudige webapp om een eerlijk wisselschema voor een hockeywedstrijd te maken. De app is bedoeld voor M.H.C.W., de hockeyclub van het Westerkwartier.
+Wisselwekker is jouw vrolijke wisselmaat langs de lijn: een eenvoudige webapp om een eerlijk wisselschema voor een hockeywedstrijd te maken en je op tijd aan wissels te herinneren. De app is bedoeld voor M.H.C.W., de hockeyclub van het Westerkwartier.
 
 ## Functies
 

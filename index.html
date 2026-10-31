@@ -3,13 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hockeyopstelling</title>
+<meta name="description" content="Wisselwekker helpt je met een eerlijk hockeywisselschema en geeft een seintje bij wisselmomenten.">
+<meta name="theme-color" content="#202c5b">
+<title>Wisselwekker</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="page-header">
   <p class="eyebrow">M.H.C.W. · De hockeyclub van het Westerkwartier</p>
-  <h1>Hockeyopstelling</h1>
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 48 48" focusable="false">
+        <circle cx="24" cy="26" r="16"></circle>
+        <path d="M20 4h8M24 10v4m0 12 7-5M12 14l-3-3m27 3 3-3"></path>
+      </svg>
+    </span>
+    <div>
+      <h1>Wisselwekker</h1>
+      <p class="tagline">jouw handige hulp aan de zijlijn</p>
+    </div>
+  </div>
 </header>
 <p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
 
@@ -53,7 +66,7 @@
     </div>
   </div>
 </div>
-<div class="timer-bar" id="timerBar">
+<div class="timer-bar" id="timerBar" role="region" aria-label="Wedstrijdtimer en wisselreminders">
   <span class="time" id="timerTime">00:00</span>
   <span class="phase" id="timerPhase"></span>
   <button id="timerToggle">Start</button>
