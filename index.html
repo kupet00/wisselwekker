@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hockeyopstelling</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+  <p class="eyebrow">M.H.C.W. · De hockeyclub van het Westerkwartier</p>
+  <h1>Hockeyopstelling</h1>
+</header>
+<p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
+
+<section>
+  <h2>1. Spelers (klik om aan/uit te zetten)</h2>
+  <div class="players" id="players"></div>
+</section>
+
+<section>
+  <h2>2. Keeper</h2>
+  <select id="keeper"></select>
+</section>
+
+<section>
+  <details>
+    <summary>⚙️ Instellingen</summary>
+    <div class="row">
+      <label>Wedstrijdduur (min)<input type="number" id="duration" value="50" min="1"></label>
+      <label>Veldspelers tegelijk (zonder keeper)<input type="number" id="slots" value="5" min="1"></label>
+      <label>Minuten per wissel<input type="number" id="interval" value="5" min="1"></label>
+      <label>Max. wissels per keer<input type="number" id="maxSubs" value="2" min="1"></label>
+      <label>Max. minuten aan de kant<input type="number" id="maxBench" value="10" min="1"></label>
+    </div>
+  </details>
+</section>
+
+<div class="row generate-row">
+  <label for="shuffleSeed">Randomisatietekst
+    <input type="text" id="shuffleSeed" autocomplete="off" autocapitalize="none">
+  </label>
+  <button class="primary" id="generate">Genereer</button>
+</div>
+<section id="output"></section>
+
+<div class="confirm-overlay" id="resetConfirm" role="dialog" aria-modal="true" aria-labelledby="resetConfirmText">
+  <div class="confirm-box">
+    <p id="resetConfirmText">Weet je het zeker? De timer en alle tijden worden gereset.</p>
+    <div class="actions">
+      <button id="resetNo">Nee</button>
+      <button class="danger" id="resetYes">Reset</button>
+    </div>
+  </div>
+</div>
+<div class="timer-bar" id="timerBar">
+  <span class="time" id="timerTime">00:00</span>
+  <span class="phase" id="timerPhase"></span>
+  <button id="timerToggle">Start</button>
+  <button class="secondary" id="timerReset">Reset</button>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
