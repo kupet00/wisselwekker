@@ -331,6 +331,7 @@ function show() {
   html += '</tbody></table></div>';
   html += '<table class="playing-time"><thead><tr><th>Naam</th><th>Minuten</th></tr></thead><tbody>' +
     names.map((x, i) => `<tr><td>${esc(x)}</td><td>${r.play[i]}</td></tr>`).join('') +
+    (keeper ? `<tr><td>${esc(keeper)} 🧤</td><td>${p.duration}</td></tr>` : '') +
     '</tbody></table>';
   const active = r.play.filter((_, i) => !isOut(dropAt, i, r.blocks.length - 1));
   if (active.length && Math.max(...active) - Math.min(...active) > r.lens[0])

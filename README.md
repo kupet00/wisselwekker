@@ -7,7 +7,7 @@ Een eenvoudige webapp om een eerlijk wisselschema voor een hockeywedstrijd te ma
 - Selecteer welke spelers meedoen en wijs eventueel een keeper aan.
 - De knop **Genereer** wordt actief zodra minstens zes spelers zijn geselecteerd en een keeper is gekozen.
 - Stel de wedstrijdduur, het aantal veldspelers en de wisselinstellingen in.
-- Genereer een wisselschema met een overzicht van de speeltijd per speler.
+- Genereer een wisselschema met een overzicht van de speeltijd per speler; de keeper staat onderaan met de volledige wedstrijdduur.
 - Pas het schema handmatig aan door op een speler in het schema te klikken.
 - Gebruik een randomisatietekst om met dezelfde invoer steeds dezelfde spelersvolgorde te krijgen. Spaties worden direct uit de tekst verwijderd. Laat het veld leeg voor een willekeurige volgorde.
 - Houd de wedstrijdtijd bij met de ingebouwde timer. De timer markeert het actieve wisselblok en geeft een signaal bij rust, het einde van de wedstrijd en wisselmomenten.
