@@ -79,7 +79,7 @@ function saveState() {
     status.classList.add('error');
     return;
   }
-  status.textContent = 'Instellingen en opstelling automatisch opgeslagen.';
+  status.textContent = 'Instellingen en opstelling automatisch opgeslagen (via cookies).';
   status.classList.remove('error');
 }
 
@@ -140,7 +140,7 @@ function restoreState() {
     };
     show();
   }
-  $('saveStatus').textContent = 'Instellingen en opstelling automatisch opgeslagen.';
+  $('saveStatus').textContent = 'Instellingen en opstelling automatisch opgeslagen (via cookies).';
   return true;
 }
 
