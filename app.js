@@ -1,10 +1,14 @@
+// Vaste spelerslijst en standaardselectie voor een nieuwe opstelling.
 const NAMES = ['Ellemieke', 'June', 'Pepijn', 'Emma', 'Lieke', 'Olivier', 'Celine', 'Riv', 'Fieke', 'Saar'];
 const players = NAMES.map(name => ({ name, on: true }));
+// Opslagsleutel en maximale lengte voor de cookie-opslag.
 const COOKIE_NAME = 'mhcw-hockeyopstelling';
 const COOKIE_MAX_LENGTH = 3800;
 
+// Verkorte helper om een element op id op te halen.
 const $ = id => document.getElementById(id);
 
+// Haalt opgeslagen instellingen eerst uit localStorage en daarna uit cookies.
 function getSavedCookie() {
   try {
     const stored = localStorage.getItem(COOKIE_NAME);
@@ -14,6 +18,7 @@ function getSavedCookie() {
   return cookie ? cookie.slice(COOKIE_NAME.length + 1) : null;
 }
 
+// Zet de huidige selectie, instellingen en wedstrijd om naar een opslagbaar object.
 function savedState() {
   const inputSettings = ['duration', 'slots', 'interval', 'maxSubs', 'maxBench'].map(id => $(id).value);
   const currentMatch = S && {
@@ -40,6 +45,7 @@ function savedState() {
   };
 }
 
+// Controleert of een opgeslagen wedstrijd alle verwachte velden en waarden bevat.
 function validMatch(match) {
   return match && Array.isArray(match.n) && match.n.length > 0 &&
     match.n.every(i => Number.isInteger(i) && i >= 0 && i < NAMES.length) &&
@@ -61,6 +67,7 @@ function validMatch(match) {
     Array.isArray(match.w) && match.w.every(warning => typeof warning === 'string');
 }
 
+// Slaat de huidige toestand op; gebruikt localStorage als cookie-opslag niet lukt.
 function saveState() {
   const value = encodeURIComponent(JSON.stringify(savedState()));
   const status = $('saveStatus');
@@ -83,6 +90,7 @@ function saveState() {
   status.classList.remove('error');
 }
 
+// Leest opgeslagen gegevens, valideert ze en herstelt daarna de interface en wedstrijd.
 function restoreState() {
   const value = getSavedCookie();
   if (value === null) return false;
@@ -144,6 +152,7 @@ function restoreState() {
   return true;
 }
 
+// Bouwt de spelersknoppen en keeperkeuze opnieuw op op basis van de selectie.
 function render() {
   $('players').innerHTML = '';
   players.forEach(p => {
@@ -168,17 +177,20 @@ function render() {
 // Berekent het wisselschema. Blokken in `frozen` blijven ongewijzigd; spelers in `dropAt`
 // (index -> blok) vallen vanaf dat blok uit en worden indien nodig direct vervangen.
 // dropAt[i] = lijst van { from, out } wijzigingen; de laatste met from <= b bepaalt of speler i uit is.
+// Geeft aan of speler i in blok b tijdelijk uit het schema is gehaald.
 function isOut(dropAt, i, b) {
   let out = false;
   (dropAt[i] || []).forEach(e => { if (e.from <= b) out = e.out; });
   return out;
 }
 
+// Vervangt eventuele latere wijzigingen zodat deze instelling vanaf `from` geldt.
 function setOut(dropAt, i, from, out) {
   dropAt[i] = (dropAt[i] || []).filter(e => e.from < from);
   dropAt[i].push({ from, out });
 }
 
+// Verdeelt spelers over veld en bank en maakt per tijdsblok de benodigde wissels.
 function buildSchedule(names, duration, slots, interval, maxSubs, maxBench, frozen = [], dropAt = {}) {
   const warnings = [];
   const gone = (i, b) => isOut(dropAt, i, b);
@@ -195,6 +207,7 @@ function buildSchedule(names, duration, slots, interval, maxSubs, maxBench, froz
 
   for (let b = 0; b < lens.length; b++) {
     let actions = [];
+    // Bevroren blokken blijven zoals ze waren; bij het eerste blok wordt het veld gevuld.
     if (b < frozen.length) {
       field = new Set(frozen[b].field);
       actions = frozen[b].actions;
@@ -204,9 +217,11 @@ function buildSchedule(names, duration, slots, interval, maxSubs, maxBench, froz
     } else {
       const changed = [];
       const avail = i => !gone(i, b);
+      // Vervang eerst spelers die vanaf dit blok zijn uitgevallen.
       const forcedOut = [...field].filter(i => !avail(i));
       const bench = [...Array(n).keys()].filter(i => !field.has(i) && avail(i));
       const mustIn = i => streak[i] + lens[b] > maxBench;
+      // Geef voorrang aan spelers met de langste banktijd en de minste speeltijd.
       bench.sort((x, y) =>
         (mustIn(y) - mustIn(x)) || (streak[y] - streak[x]) || (play[x] - play[y]));
       forcedOut.forEach(out => {
@@ -241,6 +256,7 @@ function buildSchedule(names, duration, slots, interval, maxSubs, maxBench, froz
   }
   return { lens, blocks, play, warnings: [...new Set(warnings)] };
 
+  // Houd speeltijd en aaneengesloten banktijd bij en meld wanneer iemand te lang zit.
   function accumulate(b) {
     for (let i = 0; i < n; i++) {
       if (gone(i, b)) { streak[i] = 0; continue; }
@@ -250,6 +266,7 @@ function buildSchedule(names, duration, slots, interval, maxSubs, maxBench, froz
   }
 }
 
+// Maakt een reproduceerbare toevalsbron op basis van een tekstuele seed.
 function seededRandom(seed) {
   let state = 2166136261;
   for (let i = 0; i < seed.length; i++) {
@@ -265,7 +282,9 @@ function seededRandom(seed) {
   };
 }
 
+// Ontsnapt tekst voordat die als HTML in de wedstrijdweergave wordt ingevoegd.
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Toont een wissel als namen met een wisselpictogram; gewone meldingen blijven tekst.
 function formatSubstitution(action) {
   const normalized = action.replace(' komt erin voor ', ' <> ').replace(' (uitgevallen)', '');
   const separator = normalized.indexOf(' <> ');
@@ -276,11 +295,13 @@ function formatSubstitution(action) {
 }
 let S = null; // huidige wedstrijd: { names, keeper, params, dropAt, result }
 
+// Rekent het schema opnieuw uit op basis van de huidige instellingen.
 function compute(frozen) {
   const p = S.params;
   S.result = buildSchedule(S.names, p.duration, p.slots, p.interval, p.maxSubs, p.maxBench, frozen, S.dropAt);
 }
 
+// Bouwt de wedstrijdtabel, speeltijdweergave, waarschuwingen en klikbare spelerscellen.
 function show() {
   const { names, keeper, params: p, dropAt, result: r } = S;
   const startOf = [];
@@ -308,6 +329,7 @@ function show() {
   r.warnings.forEach(w => html += `<p class="warn">⚠️ ${esc(w)}</p>`);
 
   $('output').innerHTML = html;
+  // Klik op een speler om die vanaf dit blok uit het schema te halen of terug te zetten.
   const change = (i, b, out) => {
     setOut(S.dropAt, i, b, out);
     compute(S.result.blocks.slice(0, b));
@@ -318,6 +340,7 @@ function show() {
   document.querySelectorAll('td.out').forEach(td => td.onclick = () => change(+td.dataset.i, +td.dataset.b, false));
 }
 
+// Leest de invoer, controleert die, schudt de spelersvolgorde en genereert de opstelling.
 $('generate').onclick = () => {
   saveState();
   const out = $('output');
@@ -343,6 +366,7 @@ $('generate').onclick = () => {
   saveState();
 };
 
+// Initialiseert de selectie, herstelt eerdere gegevens en bewaart wijzigingen automatisch.
 render();
 if (!restoreState()) saveState();
 $('shuffleSeed').addEventListener('input', event => {
@@ -354,8 +378,9 @@ $('shuffleSeed').addEventListener('input', event => {
   $(id).addEventListener('input', saveState);
   $(id).addEventListener('change', saveState);
 });
-// Timer: toestand staat in een cookie zodat hij blijft kloppen na wegnavigeren
+// Timergegevens worden bewaard zodat de wedstrijdklok doorloopt na navigatie of herladen.
 const TIMER_COOKIE = 'mhcw-timer';
+// Herstelt de timer uit lokale opslag of een cookie, of geeft een nieuwe timer terug.
 function loadTimer() {
   let raw = null;
   try { raw = localStorage.getItem(TIMER_COOKIE); } catch (e) {}
@@ -370,34 +395,41 @@ function loadTimer() {
 }
 let timer = loadTimer();
 // Cookies werken niet op file://, daarom ook in localStorage opslaan
+// Bewaart de huidige timerstand in beide beschikbare opslaglocaties.
 function saveTimer() {
   const value = JSON.stringify(timer);
   const secure = location.protocol === 'https:' ? '; Secure' : '';
   document.cookie = `${TIMER_COOKIE}=${encodeURIComponent(value)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
   try { localStorage.setItem(TIMER_COOKIE, value); } catch (e) {}
 }
+// Verwijdert de opgeslagen timerstand bij een reset.
 function clearTimerCookie() {
   document.cookie = `${TIMER_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
   try { localStorage.removeItem(TIMER_COOKIE); } catch (e) {}
 }
+// Geeft verstreken tijd terug, inclusief de tijd sinds de timer is gestart.
 function timerMs() {
   return timer.acc + (timer.since ? Date.now() - timer.since : 0);
 }
+// Haalt de ingestelde wedstrijdduur op en valt terug op 50 minuten.
 function timerDurationMs() {
   return Math.max(1, Number($('duration').value) || 50) * 60000;
 }
+// Formatteert milliseconden als minuten en seconden.
 function fmt(ms) {
   const total = Math.floor(ms / 1000);
   return String(Math.floor(total / 60)).padStart(2, '0') + ':' + String(total % 60).padStart(2, '0');
 }
 let lastBlockKey; // undefined bij laden: dan geen alarm
 let audioCtx = null;
+// Activeert audio na een gebruikersactie, zoals vereist door browsers.
 function unlockAudio() {
   try {
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
   } catch (e) {}
 }
+// Geeft een trilsignaal en, indien audio beschikbaar is, drie korte tonen.
 function playAlarm() {
   if (navigator.vibrate) navigator.vibrate([300, 150, 300]);
   if (!audioCtx || audioCtx.state !== 'running') return;
@@ -414,6 +446,7 @@ function playAlarm() {
     osc.stop(t + 0.3);
   });
 }
+// Werkt de klok, speelhelft, huidige wisselblok en bedieningsstatus bij.
 function timerTick() {
   const full = timerDurationMs();
   const half = full / 2;
@@ -454,6 +487,7 @@ function timerTick() {
 $('timerToggle').addEventListener('click', () => {
   unlockAudio();
   if (timer.secondHalfPlayed) return;
+  // Pauzeer door de verstreken tijd vast te leggen, of start/hervat de klok.
   if (timer.since) {
     timer.acc = timerMs(); timer.since = null;
   } else {
@@ -461,6 +495,7 @@ $('timerToggle').addEventListener('click', () => {
   }
   saveTimer(); timerTick();
 });
+// Vraagt bevestiging voordat de timer wordt teruggezet.
 $('timerReset').addEventListener('click', () => $('resetConfirm').classList.add('open'));
 $('resetNo').addEventListener('click', () => $('resetConfirm').classList.remove('open'));
 $('resetYes').addEventListener('click', () => {
@@ -468,5 +503,6 @@ $('resetYes').addEventListener('click', () => {
   timer = { acc: 0, since: null, firstHalfPlayed: false, secondHalfPlayed: false, starts: [] };
   clearTimerCookie(); timerTick();
 });
+// Werk de timer meteen bij en daarna vier keer per seconde.
 timerTick();
 setInterval(timerTick, 250);
