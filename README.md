@@ -5,6 +5,7 @@ Een eenvoudige webapp om een eerlijk wisselschema voor een hockeywedstrijd te ma
 ## Functies
 
 - Selecteer welke spelers meedoen en wijs eventueel een keeper aan.
+- De knop **Genereer** wordt actief zodra minstens zes spelers zijn geselecteerd en een keeper is gekozen.
 - Stel de wedstrijdduur, het aantal veldspelers en de wisselinstellingen in.
 - Genereer een wisselschema met een overzicht van de speeltijd per speler.
 - Pas het schema handmatig aan door op een speler in het schema te klikken.

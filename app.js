@@ -123,6 +123,7 @@ function restoreState() {
   players.forEach((player, i) => { player.on = state.a.includes(i); });
   render();
   if (players.some(player => player.on && player.name === state.k)) $('keeper').value = state.k;
+  updateGenerateButton();
   if (state.s) {
     const match = state.s;
     S = {
@@ -172,6 +173,13 @@ function render() {
     $('keeper').appendChild(o);
   });
   if ([...$('keeper').options].some(o => o.value === prev)) $('keeper').value = prev;
+  updateGenerateButton();
+}
+
+// Schakelt genereren in zodra minstens zes spelers en een geselecteerde keeper aanwezig zijn.
+function updateGenerateButton(locked = document.body.classList.contains('timer-locked')) {
+  const selectedKeeper = players.some(p => p.on && p.name === $('keeper').value);
+  $('generate').disabled = locked || players.filter(p => p.on).length < 6 || !selectedKeeper;
 }
 
 // Berekent het wisselschema. Blokken in `frozen` blijven ongewijzigd; spelers in `dropAt`
@@ -375,8 +383,8 @@ $('shuffleSeed').addEventListener('input', event => {
   if (input.value !== lowercase) input.value = lowercase;
 });
 ['duration', 'slots', 'interval', 'maxSubs', 'maxBench', 'keeper', 'shuffleSeed'].forEach(id => {
-  $(id).addEventListener('input', saveState);
-  $(id).addEventListener('change', saveState);
+  $(id).addEventListener('input', () => { saveState(); updateGenerateButton(); });
+  $(id).addEventListener('change', () => { saveState(); updateGenerateButton(); });
 });
 // Timergegevens worden bewaard zodat de wedstrijdklok doorloopt na navigatie of herladen.
 const TIMER_COOKIE = 'mhcw-timer';
@@ -461,8 +469,9 @@ function timerTick() {
   $('timerTime').textContent = fmt(ms);
   const locked = !!timer.since || timer.acc > 0 || timer.firstHalfPlayed || timer.secondHalfPlayed;
   document.body.classList.toggle('timer-locked', locked);
-  ['duration', 'slots', 'interval', 'maxSubs', 'maxBench', 'keeper', 'shuffleSeed', 'generate']
+  ['duration', 'slots', 'interval', 'maxSubs', 'maxBench', 'keeper', 'shuffleSeed']
     .forEach(id => { $(id).disabled = locked; });
+  updateGenerateButton(locked);
   const minute = ms / 60000;
   let currentRow = null;
   document.querySelectorAll('#output tr[data-start]').forEach(tr => {
