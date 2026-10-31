@@ -119,7 +119,7 @@ function restoreState() {
   state.f.forEach((value, i) => {
     $(['duration', 'slots', 'interval', 'maxSubs', 'maxBench'][i]).value = value;
   });
-  $('shuffleSeed').value = (state.r || '').toLowerCase();
+  $('shuffleSeed').value = (state.r || '').replace(/\s/g, '').toLowerCase();
   players.forEach((player, i) => { player.on = state.a.includes(i); });
   render();
   if (players.some(player => player.on && player.name === state.k)) $('keeper').value = state.k;
@@ -362,8 +362,8 @@ $('generate').onclick = () => {
     out.innerHTML = '<p class="warn">Vul overal een positief getal in.</p>'; return;
   }
   if (!names.length) { out.innerHTML = '<p class="warn">Geen veldspelers geselecteerd.</p>'; return; }
-  const seed = $('shuffleSeed').value;
-  const random = seed.trim() ? seededRandom(seed) : Math.random;
+  const seed = $('shuffleSeed').value.replace(/\s/g, '');
+  const random = seed ? seededRandom(seed) : Math.random;
   for (let i = names.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
     [names[i], names[j]] = [names[j], names[i]];
@@ -379,8 +379,8 @@ render();
 if (!restoreState()) saveState();
 $('shuffleSeed').addEventListener('input', event => {
   const input = event.currentTarget;
-  const lowercase = input.value.toLowerCase();
-  if (input.value !== lowercase) input.value = lowercase;
+  const normalized = input.value.replace(/\s/g, '').toLowerCase();
+  if (input.value !== normalized) input.value = normalized;
 });
 ['duration', 'slots', 'interval', 'maxSubs', 'maxBench', 'keeper', 'shuffleSeed'].forEach(id => {
   $(id).addEventListener('input', () => { saveState(); updateGenerateButton(); });

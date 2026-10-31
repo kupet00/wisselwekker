@@ -9,7 +9,7 @@ Een eenvoudige webapp om een eerlijk wisselschema voor een hockeywedstrijd te ma
 - Stel de wedstrijdduur, het aantal veldspelers en de wisselinstellingen in.
 - Genereer een wisselschema met een overzicht van de speeltijd per speler.
 - Pas het schema handmatig aan door op een speler in het schema te klikken.
-- Gebruik een randomisatietekst om met dezelfde invoer steeds dezelfde spelersvolgorde te krijgen. Laat het veld leeg voor een willekeurige volgorde.
+- Gebruik een randomisatietekst om met dezelfde invoer steeds dezelfde spelersvolgorde te krijgen. Spaties worden direct uit de tekst verwijderd. Laat het veld leeg voor een willekeurige volgorde.
 - Houd de wedstrijdtijd bij met de ingebouwde timer. De timer markeert het actieve wisselblok en geeft een signaal bij rust, het einde van de wedstrijd en wisselmomenten.
 - Instellingen, het schema en de timer worden automatisch in de browser opgeslagen.
 
